@@ -25,13 +25,13 @@ export default function Hero() {
           src={img}
           alt={`Hero ${index}`}
           className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ${
-            index === current ? "opacity-100" : "opacity-0"
+            index === current ? "opacity-100" : "opacity-100"
           }`}
         />
       ))}
 
       {/* Texto encima de la imagen */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white bg-black/40">
+      <div className="absolute inset-0 flex flex-col pl-5 md:pl-10 lg:pl-none items-center justify-center  text-white bg-black/20">
         <h1 className="text-4xl font-bold mb-4">Bienvenido al CTT  - Talleres Tecnológicos</h1>
         <p className="text-lg max-w-xl">
           Cursos  virtuales y presenciales

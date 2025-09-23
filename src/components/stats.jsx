@@ -1,3 +1,7 @@
+import { useEffect } from 'react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+
 const stats = [
   { id: 1, name: 'Estudiantes', value: '2,000' },
   { id: 2, name: 'Cursos activos', value: '40' },
@@ -5,8 +9,12 @@ const stats = [
 ]
 
 export default function Stats() {
+  useEffect(() => {
+    AOS.init({ duration: 1000, once: false, mirror: true });
+    AOS.refresh();
+  }, []);
   return (
-     <div className="bg-[#F5F5F5] py-12 sm:py-14">
+     <div className="bg-[#F5F5F5] py-12 sm:py-14 mt-16" data-aos="fade-down">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-3">
           {stats.map((stat) => (

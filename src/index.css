@@ -23,6 +23,10 @@ a:hover {
   color: white;
 }
 
+.agray {
+  color: #919191
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
@@ -35,16 +39,53 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: 0.5s;
+  color: white;
+  background-color: #CB972D;
 }
 button:hover {
-  border-color: #646cff;
+
+  background-color: #916500;
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  background-color: #916500;
+}
+button.rojo {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: 0.5s;
+  color: white;
+  background: #6C1313;
+}
+button.rojo:hover {
+  color: black;
+  background-color: white;
+  border: 1px solid #6C1313;
+}
+button.rojo:focus,
+button.rojo:focus-visible {
+  color: black;
+  border: 1px solid #6C1313;
+  background-color: white;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE y Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari y Opera */
+}
+
+.NavLink{
+  color: #6C1313;
 }
 
 @media (prefers-color-scheme: light) {
@@ -56,6 +97,10 @@ button:focus-visible {
     color: white;
   }
   button {
-    background-color: #f9f9f9;
+
+    background-color: #CB972D;
+  }
+  button.rojo {
+    background-color: #6C1313;
   }
 }

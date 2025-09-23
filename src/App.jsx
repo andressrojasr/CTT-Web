@@ -1,15 +1,29 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { Routes, Route, Outlet } from 'react-router-dom'
+import Header from './components/header.jsx'
+import Nav from './components/nav.jsx'
 import Home from './pages/home.jsx'
+import Courses from './pages/Courses.jsx'
+import Nosotros from './pages/Nosotros.jsx'
+import Contact from './pages/Contact.jsx'
+import Footer from './components/footer.jsx'
 
 function App() {
 
   return (
-    <>
-      <Home />
-    </>
+      <>
+        <Header />
+        <Nav />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/nosotros" element={<Nosotros />} />
+          <Route path="/contact" element={<Contact />} />
+
+          <Route path="*" element={<div>404 Not Found</div>} />
+        </Routes>
+        <Footer />
+      </>
   )
 }
 
