@@ -9,7 +9,7 @@ export default function Footer() {
               AOS.refresh();
   }, []);
   return (
-    <footer className="bg-gray-900 agray mt-15" data-aos="fade-down">
+    <footer className="bg-gray-900" data-aos="fade-down">
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="flex flex-col items-center md:items-start space-y-4">
           <p className="text-center md:text-left max-w-md">
