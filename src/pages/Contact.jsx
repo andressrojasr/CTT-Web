@@ -149,14 +149,14 @@ export default function Contact() {
                 </div>
 
                 {/* Mapa - Columna Derecha */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-300 overflow-hidden">
+                <div className="bg-white rounded-2xl shadow-xl border h-full border-gray-300 overflow-hidden">
                     <div className="p-4 bg-[#6C1313] text-white">
                         <h3 className="text-lg font-semibold text-center">Nuestra Ubicación</h3>
                     </div>
-                    <div className="aspect-video w-full">
+                    <div className="aspect-video w-full h-full">
                         <iframe
                             width="100%"
-                            height="100%"
+                            height="90%"
                             style={{ border: 0 }}
                             loading="lazy"
                             allowFullScreen

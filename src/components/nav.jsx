@@ -80,7 +80,7 @@ export default function Nav() {
           </div>
           <div className="mt-6 flow-root">
             <div className="-my-6 divide-y divide-gray-500/10" >
-              <div className="space-y-2 py-6">
+              <div className="space-y-2 py-12">
                 {navigation2.map((item) => (
                   <NavLink
                     key={item.id}
