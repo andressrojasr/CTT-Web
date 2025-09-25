@@ -171,6 +171,7 @@ export default function CoursesList({filters}) {
                                     image={course.image}
                                     isOpen={course.isOpen}
                                     hours={course.hours}
+                                    id={course.id}
                                 />
                             </div>
                         ))}

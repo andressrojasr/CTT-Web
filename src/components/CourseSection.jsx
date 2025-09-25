@@ -114,16 +114,17 @@ export default function CourseSection({ filters }) {
                 {!loading && !error && courses.length > 0 && (
                     <div className="overflow-x-auto whitespace-nowrap scrollbar-hide">
                         <div className=" mt-10 lg:m-10 flex lg:grid sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch h-auto">
-                            {courses.map((course, index) => (
-                                <div data-aos="zoom-in" key={course.id || index} className="inline-block w-full px-6">
-                                    <CardCourse
-                                        title={course.title}
-                                        image={course.image}
-                                        isOpen={course.isOpen}
-                                        hours={course.hours}
-                                    />
-                                </div>
-                            ))}
+                        {courses.map((course, index) => (
+                            <div data-aos="zoom-in" key={course.id || index} className="inline-block w-full px-6">
+                                <CardCourse
+                                    title={course.title}
+                                    image={course.image}
+                                    isOpen={course.isOpen}
+                                    hours={course.hours}
+                                    id={course.id}
+                                />
+                            </div>
+                        ))}
                         </div>
                     </div>
                 )}

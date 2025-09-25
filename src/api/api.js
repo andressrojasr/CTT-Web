@@ -51,4 +51,25 @@ export const getCoursesByCategory = async (category) => {
     }
 };
 
+/**
+ * Obtiene un curso específico por su ID
+ * @param {number} courseId - ID del curso
+ * @returns {Promise<Course>} Datos del curso
+ * @throws {Error} Si ocurre un error en la petición
+ */
+export const getCourseById = async (courseId) => {
+    try {
+        const response = await api.get(`/courses/${courseId}`);
+        return response.data;
+    } catch (error) {
+        if (error.code === 'ECONNABORTED') {
+            throw new Error('Tiempo de espera agotado. Verifica tu conexión a internet.');
+        }
+        if (error.response) {
+            throw new Error(`Error del servidor: ${error.response.status} - ${error.response.data?.message || 'Error desconocido'}`);
+        }
+        throw new Error(`Error de red: ${error.message}`);
+    }
+};
+
 export default api;
