@@ -2,7 +2,7 @@ import CardCourse from "./CardCourse"
 import { useEffect, useState } from "react"
 import AOS from "aos"
 import 'aos/dist/aos.css'
-import { getCourses, getCoursesByCategory } from "../api/api"
+import { getCourses, getCoursesByCategory, getCoursesByHoursRange } from "../api/api"
 
 export default function CoursesList({filters}) {
     const [courses, setCourses] = useState([]);
@@ -15,14 +15,24 @@ export default function CoursesList({filters}) {
     }, []);
 
     // Cargar cursos desde la API
-    const loadCourses = async (category = null) => {
+    const loadCourses = async (category = null, duration = null) => {
         try {
             setLoading(true);
             setError(null);
 
-            const coursesData = category && category !== 'Todos'
-                ? await getCoursesByCategory(category)
-                : await getCourses();
+            let coursesData;
+
+            // Si hay filtro de duración específico, usar el endpoint de horas
+            if (duration && duration !== '') {
+                const [minHours, maxHours] = getHoursRange(duration);
+                coursesData = await getCoursesByHoursRange(minHours, maxHours);
+            } else if (category && category !== 'Todos') {
+                // Si category tiene un valor específico, filtramos por categoría
+                coursesData = await getCoursesByCategory(category);
+            } else {
+                // Obtener todos los cursos
+                coursesData = await getCourses();
+            }
 
             // Transformar los datos de la API para que coincidan con la estructura esperada por CardCourse
             const transformedCourses = coursesData.map(course => ({
@@ -43,13 +53,32 @@ export default function CoursesList({filters}) {
         }
     };
 
-    // Cargar cursos cuando cambian los filtros de categoría
+    // Convertir el filtro de duración a rango de horas
+    const getHoursRange = (durationFilter) => {
+        switch(durationFilter) {
+            case 'less10':
+                return [0, 9];
+            case '10to19':
+                return [10, 19];
+            case '20to59':
+                return [20, 59];
+            case '60to99':
+                return [60, 99];
+            case '100plus':
+                return [100, 999];
+            default:
+                return [0, 999];
+        }
+    };
+
+    // Cargar cursos cuando cambian los filtros
     useEffect(() => {
         const categoryFilter = filters.category;
-        loadCourses(categoryFilter);
-    }, [filters.category]);
+        const durationFilter = filters.duration;
+        loadCourses(categoryFilter, durationFilter);
+    }, [filters.category, filters.duration]);
 
-    // Función para verificar si un curso cumple con los filtros de duración
+    // Función para verificar si un curso cumple con los filtros de duración (usada para filtrado del lado del cliente)
     const matchesDurationFilter = (courseHours) => {
         if (!filters.duration) return true;
 
@@ -78,9 +107,9 @@ export default function CoursesList({filters}) {
             return false;
         }
 
-        // Filtro de categorías
-        if (filters.category) {
-            // Si el filtro es por una categoría específica, comparar con la categoría del curso
+        // Filtro de categorías - Solo aplicar si NO se está usando el endpoint de horas
+        // Cuando se usa el endpoint de horas, el filtrado de categoría ya se hace en el backend
+        if (filters.category && filters.category !== 'Todos' && !filters.duration) {
             if (filters.category !== course.category) {
                 return false;
             }
@@ -95,17 +124,10 @@ export default function CoursesList({filters}) {
 
         // Filtro de modalidad (si se implementa en el futuro)
         if (filters.modality) {
-            // Por ahora, todos los cursos se consideran presenciales por defecto
-            // Esto se puede expandir cuando se agregue el campo modality a los cursos
             const courseModality = course.requirements?.modality?.toLowerCase() || 'presencial';
             if (filters.modality !== courseModality) {
                 return false;
             }
-        }
-
-        // Filtro de duración
-        if (!matchesDurationFilter(course.hours)) {
-            return false;
         }
 
         return true;
