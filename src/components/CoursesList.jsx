@@ -1,33 +1,53 @@
-import { CpuChipIcon, BuildingLibraryIcon, CommandLineIcon, ComputerDesktopIcon  } from "@heroicons/react/24/outline"
 import CardCourse from "./CardCourse"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import AOS from "aos"
 import 'aos/dist/aos.css'
-
-const categories = [
-    { id: 1, text: 'TICS', icon: ComputerDesktopIcon,   status: 'true' },
-    { id: 2, text: 'Educativo', icon: BuildingLibraryIcon, status: 'false' },
-    { id: 3, text: 'Software', icon: CommandLineIcon, status: 'false' },
-    { id: 4, text: 'Electrónica', icon: CpuChipIcon, status: 'false' },
-]
-
-const courses = [
-    {title: "ARDUINO DESDE CERO: ELECTRÓNICA, PROGRAMACIÓN Y AUTOMATIZACIÓN", image: "https://d3puay5pkxu9s4.cloudfront.net/curso/4317/800_imagen.jpg", isOpen: true, hours: "32"},
-    {title: "ARDUINO DESDE CERO: ELECTRÓNICA, PROGRAMACIÓN Y dasdasdasdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssddddddddddddddd", image: "https://d3puay5pkxu9s4.cloudfront.net/curso/4317/800_imagen.jpg", isOpen: false, hours: "32"},
-    {title: "ARDUINO DESDE CERO: ELECTRÓNICA, PROGRAMACIÓN Y AUTOMATIZACIÓN", image: "https://d3puay5pkxu9s4.cloudfront.net/curso/4317/800_imagen.jpg", isOpen: false, hours: "32"},
-    {title: "ARDUINO DESDE CERO: ELECTRÓNICA, PROGRAMACIÓN Y AUTOMATIZACIÓN", image: "https://d3puay5pkxu9s4.cloudfront.net/curso/4317/800_imagen.jpg", isOpen: false, hours: "32"},
-    {title: "ARDUINO DESDE CERO: ELECTRÓNICA, PROGRAMACIÓN Y AUTOMATIZACIÓN", image: "https://d3puay5pkxu9s4.cloudfront.net/curso/4317/800_imagen.jpg", isOpen: false, hours: "32"},
-    {title: "ARDUINO DESDE CERO: ELECTRÓNICA, PROGRAMACIÓN Y AUTOMATIZACIÓN", image: "https://d3puay5pkxu9s4.cloudfront.net/curso/4317/800_imagen.jpg", isOpen: false, hours: "32"},
-    {title: "ARDUINO DESDE CERO: ELECTRÓNICA, PROGRAMACIÓN Y AUTOMATIZACIÓN", image: "https://d3puay5pkxu9s4.cloudfront.net/curso/4317/800_imagen.jpg", isOpen: false, hours: "32"},
-    {title: "ARDUINO DESDE CERO: ELECTRÓNICA, PROGRAMACIÓN Y AUTOMATIZACIÓN", image: "https://d3puay5pkxu9s4.cloudfront.net/curso/4317/800_imagen.jpg", isOpen: false, hours: "32"},
-    {title: "ARDUINO DESDE CERO: ELECTRÓNICA, PROGRAMACIÓN Y AUTOMATIZACIÓN", image: "https://d3puay5pkxu9s4.cloudfront.net/curso/4317/800_imagen.jpg", isOpen: false, hours: "32"},
-]
+import { getCourses, getCoursesByCategory } from "../api/api"
 
 export default function CoursesList({filters}) {
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     useEffect(() => {
         AOS.init({ duration: 1000, once: false, mirror: true });
         AOS.refresh();
-      }, []);
+    }, []);
+
+    // Cargar cursos desde la API
+    const loadCourses = async (category = null) => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const coursesData = category && category !== 'Todos'
+                ? await getCoursesByCategory(category)
+                : await getCourses();
+
+            // Transformar los datos de la API para que coincidan con la estructura esperada por CardCourse
+            const transformedCourses = coursesData.map(course => ({
+                title: course.title,
+                image: course.course_image,
+                isOpen: course.status === 'Activo',
+                hours: course.requirements?.hours?.total?.toString() || '0',
+                description: course.description,
+                id: course.id,
+                category: course.category
+            }));
+
+            setCourses(transformedCourses);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Cargar cursos cuando cambian los filtros de categoría
+    useEffect(() => {
+        const categoryFilter = filters.category;
+        loadCourses(categoryFilter);
+    }, [filters.category]);
 
     // Función para verificar si un curso cumple con los filtros de duración
     const matchesDurationFilter = (courseHours) => {
@@ -60,8 +80,8 @@ export default function CoursesList({filters}) {
 
         // Filtro de categorías
         if (filters.category) {
-            const courseCategory = categories.find(cat => cat.text === 'Electrónica')?.text || '';
-            if (filters.category !== courseCategory) {
+            // Si el filtro es por una categoría específica, comparar con la categoría del curso
+            if (filters.category !== course.category) {
                 return false;
             }
         }
@@ -77,6 +97,10 @@ export default function CoursesList({filters}) {
         if (filters.modality) {
             // Por ahora, todos los cursos se consideran presenciales por defecto
             // Esto se puede expandir cuando se agregue el campo modality a los cursos
+            const courseModality = course.requirements?.modality?.toLowerCase() || 'presencial';
+            if (filters.modality !== courseModality) {
+                return false;
+            }
         }
 
         // Filtro de duración
@@ -93,23 +117,65 @@ export default function CoursesList({filters}) {
     return (
         <div className="overflow-hidden bg-white mx-auto max-w-7xl md:px-6 lg:px-8 pt-8" data-aos="fade-down">
             <h2 className="text-2xl font-semibold text-[#6C1313] ml-6">Cursos</h2>
-            {filteredCourses.length === 0 ? (
-                <div className="text-center py-12">
-                    <p className="text-gray-500 text-lg">No se encontraron cursos que coincidan con los filtros seleccionados.</p>
+
+            {loading && (
+                <div className="flex justify-center items-center mt-10">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6C1313]"></div>
+                    <span className="ml-3 text-[#6C1313]">Cargando cursos...</span>
+                </div>
+            )}
+
+            {error && (
+                <div className="flex justify-center items-center mt-10">
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        <p>Error al cargar los cursos: {error}</p>
+                        <button
+                            onClick={() => loadCourses(filters.category)}
+                            className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                            Reintentar
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {!loading && !error && filteredCourses.length === 0 ? (
+                <div className="flex flex-col justify-center items-center mt-16 mb-12 px-6">
+                    <div className="relative bg-gray-50 rounded-2xl p-8 max-w-md w-full text-center shadow-sm border border-gray-100">
+                        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl opacity-50"></div>
+                        <div className="relative z-10">
+                            <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
+                                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25A8.966 8.966 0 0118 3.75c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                                </svg>
+                            </div>
+                            <h3 className="text-lg font-medium text-gray-800 mb-2">
+                                {filters.category === 'Todos' || !filters.category ? 'Sin cursos disponibles' : 'Categoría sin cursos'}
+                            </h3>
+                            <p className="text-gray-500 text-sm leading-relaxed">
+                                {filters.category === 'Todos' || !filters.category
+                                    ? 'Actualmente no hay cursos disponibles. Te notificaremos cuando se agreguen nuevos contenidos.'
+                                    : `No encontramos cursos para "${filters.category}". Prueba con otra categoría o revisa más tarde.`
+                                }
+                            </p>
+                        </div>
+                    </div>
                 </div>
             ) : (
-                <div className="mt-10 lg:m-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch h-auto">
-                    {filteredCourses.map((course, index) => (
-                        <div data-aos="zoom-in" key={index} className="inline-block w-full px-6">
-                            <CardCourse
-                                title={course.title}
-                                image={course.image}
-                                isOpen={course.isOpen}
-                                hours={course.hours}
-                            />
-                        </div>
-                    ))}
-                </div>
+                !loading && !error && (
+                    <div className="mt-10 lg:m-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch h-auto">
+                        {filteredCourses.map((course, index) => (
+                            <div data-aos="zoom-in" key={course.id || index} className="inline-block w-full px-6">
+                                <CardCourse
+                                    title={course.title}
+                                    image={course.image}
+                                    isOpen={course.isOpen}
+                                    hours={course.hours}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )
             )}
         </div>
     )
