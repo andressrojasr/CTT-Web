@@ -4,6 +4,7 @@ import Header from './components/header.jsx'
 import Nav from './components/nav.jsx'
 import Home from './pages/home.jsx'
 import Courses from './pages/Courses.jsx'
+import CourseDetail from './pages/CourseDetail.jsx'
 import Nosotros from './pages/Nosotros.jsx'
 import Contact from './pages/Contact.jsx'
 import Footer from './components/footer.jsx'
@@ -17,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
+          <Route path="/course/:id" element={<CourseDetail />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/contact" element={<Contact />} />
 

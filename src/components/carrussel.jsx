@@ -32,14 +32,14 @@ export default function Carrusel({slides, height= "500px", buttons, marginTop, c
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 flex items-center justify-start bg-black/40">
-            <div className=" p-8 rounded-md ml-16 max-w-lg" style={{color: colorText, background: background}}>
+            <div className=" p-8 rounded-md ml-16 max-w-[700px]" style={{color: colorText, background: background}}>
               {slide.title && (
-                <h4 className="text-sm tracking-wider font-semibold" data-aos="fade-right">
+                <h4 className="text-xl tracking-wider font-semibold" data-aos="fade-right">
                   {slide.title}
                 </h4>
               )}
               {slide.subtitle && (
-                <h2 className="text-3xl md:text-4xl font-bold  mt-2" data-aos="fade-right" data-aos-delay="200">
+                <h2 className="text-3xl md:text-5xl font-bold  mt-2" data-aos="fade-right" data-aos-delay="200">
                   {slide.subtitle}
                 </h2>
               )}

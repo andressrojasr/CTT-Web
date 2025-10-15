@@ -1,6 +1,9 @@
 @import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family:  sans-serif, "Roboto", system-ui, Avenir, Helvetica, Arial;
   line-height: 1.5;
   font-weight: 400;
 
@@ -65,15 +68,16 @@ button.rojo {
   background: #6C1313;
 }
 button.rojo:hover {
-  color: black;
-  background-color: white;
-  border: 1px solid #6C1313;
+  background-color: #5a0f0f;
 }
 button.rojo:focus,
 button.rojo:focus-visible {
-  color: black;
-  border: 1px solid #6C1313;
-  background-color: white;
+  background-color: #5a0f0f;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(108, 19, 19, 0.5);
+}
+button.rojo:active {
+  background-color: #4a0c0c;
 }
 
 .scrollbar-hide {

@@ -16,20 +16,22 @@ const contentHero =[
 export default function Courses() {
   const [filters, setFilters] = useState({
     search: "",
-    categories: [],
+    category: "",
     status: "",
-    minHours: "",
-    maxHours: "",
+    modality: "",
+    duration: "",
   });
   return (
     <>
-        <Carrusel slides={contentHero} height="400px" background={'white'} colorText={'#6C1313'} />
-        <div className="lg:flex">
+    <div className="bg-white">
+    <Carrusel slides={contentHero} height="400px" background={'white'} colorText={'#6C1313'} />
+        <div className="lg:flex container mx-auto p-5">
           <FilterSidebar filters={filters} setFilters={setFilters} />
           <div className="lg:flex-1">
             <CoursesList filters={filters} />
           </div>
         </div>
+    </div>
     </>
   )
 }

@@ -32,7 +32,7 @@ export default function Hero() {
 
       {/* Texto encima de la imagen */}
       <div className="absolute inset-0 flex flex-col pl-5 md:pl-10 lg:pl-none items-center justify-center  text-white bg-black/20">
-        <h1 className="text-4xl font-bold mb-4">Bienvenido al CTT  - Talleres Tecnológicos</h1>
+        <h1 className="text-8xl font-bold mb-4">Bienvenido al CTT  - Talleres Tecnológicos</h1>
         <p className="text-lg max-w-xl">
           Cursos  virtuales y presenciales
         </p>

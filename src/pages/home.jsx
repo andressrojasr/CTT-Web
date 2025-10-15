@@ -93,11 +93,11 @@ const slidesCarrussel = [
 export default function Home() {
   return (
     <div>
-      <Carrusel slides={contentHero} height="540px" buttons colorText={'#FFFFFF'} />
+      <Carrusel slides={contentHero} height='calc(100vh - 198px)' buttons colorText={'#FFFFFF'} />
       <CourseSection/>
       <BannerImage slides={slides} />
       <Stats/>
-      <Carrusel slides={slidesCarrussel} marginTop={65} colorText={'#6C1313'} background={'white'}/>
+      <Carrusel slides={slidesCarrussel} marginBottom={65} colorText={'#6C1313'} background={'white'}/>
     </div>
   );
 }

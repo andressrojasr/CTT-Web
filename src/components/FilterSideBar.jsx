@@ -30,15 +30,20 @@ export default function FilterSidebar({ filters, setFilters }) {
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
 
-  const resetFilters = () =>
+  const resetFilters = () => {
     setFilters({
       search: "",
-      categories: [],
+      category: "",
       status: "",
       modality: "",
-      minHours: "",
-      maxHours: "",
+      duration: "",
     });
+
+    // Forzar actualización del componente para limpiar estados de hover/focus
+    setTimeout(() => {
+      document.activeElement?.blur();
+    }, 100);
+  };
 
   const FiltersContent = (
     <div className="min-h-0"> {/* min-h-0 evita que el contenido estire contenedores padres */}
@@ -59,27 +64,88 @@ export default function FilterSidebar({ filters, setFilters }) {
       </div>
 
       <div className="mb-6">
-        <h3 className="text-sm font-medium text-gray-700 mb-2">Categorías</h3>
-        <div className="space-y-2">
-          {categories.map((cat) => (
-            <label key={cat.id} className="flex items-center gap-2 cursor-pointer">
+        <h3 className="text-sm font-medium text-gray-700 mb-3">Categorías</h3>
+        <div className="space-y-3">
+          {/* Opción para mostrar todas las categorías */}
+          <label className="flex items-center gap-3 cursor-pointer group transition-all duration-200 hover:bg-gray-50 p-2 rounded-lg -m-2">
+            <div className="relative">
               <input
-                type="checkbox"
-                checked={filters.categories.includes(cat.text)}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    handleChange("categories", [...filters.categories, cat.text]);
-                  } else {
-                    handleChange(
-                      "categories",
-                      filters.categories.filter((c) => c !== cat.text)
-                    );
-                  }
-                }}
-                className="rounded text-[#6C1313] focus:ring-[#6C1313]"
+                type="radio"
+                name="category"
+                value=""
+                checked={filters.category === ""}
+                onChange={(e) => handleChange("category", e.target.value)}
+                className="sr-only"
               />
-              <span className="flex items-center gap-1 text-sm">
-                <cat.icon className="h-4 w-4 text-gray-500" />
+                <div className={`
+                  w-5 h-5 border-2 rounded-full transition-all duration-200 flex items-center justify-center
+                  ${filters.category === ""
+                    ? 'bg-[#6C1313] border-[#6C1313] text-white'
+                    : 'bg-white border-gray-300 hover:border-[#6C1313] hover:shadow-sm focus:outline-none focus:border-[#6C1313] focus:shadow-md active:border-[#6C1313] active:shadow-sm'
+                  }
+                `}>
+                {filters.category === "" && (
+                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                )}
+              </div>
+            </div>
+            <span className={`
+              flex items-center gap-3 text-sm transition-all duration-200
+              ${filters.category === ""
+                ? 'text-[#6C1313] font-medium'
+                : 'text-gray-700 group-hover:text-gray-900'
+              }
+            `}>
+              <span className={`
+                w-6 h-6 flex items-center justify-center transition-all duration-200
+                ${filters.category === ""
+                  ? 'text-[#6C1313]'
+                  : 'text-gray-600 group-hover:text-gray-700'
+                }
+              `}>
+                ⊙
+              </span>
+              Todas las categorías
+            </span>
+          </label>
+
+          {categories.map((cat) => (
+            <label key={cat.id} className="flex items-center gap-3 cursor-pointer group transition-all duration-200 hover:bg-gray-50 p-2 rounded-lg -m-2">
+              <div className="relative">
+                <input
+                  type="radio"
+                  name="category"
+                  value={cat.text}
+                  checked={filters.category === cat.text}
+                  onChange={(e) => handleChange("category", e.target.value)}
+                  className="sr-only"
+                />
+                <div className={`
+                  w-5 h-5 border-2 rounded-full transition-all duration-200 flex items-center justify-center
+                  ${filters.category === cat.text
+                    ? 'bg-[#6C1313] border-[#6C1313] text-white'
+                    : 'bg-white border-gray-300 hover:border-[#6C1313] hover:shadow-sm focus:outline-none focus:border-[#6C1313] focus:shadow-md active:border-[#6C1313] active:shadow-sm'
+                  }
+                `}>
+                  {filters.category === cat.text && (
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                  )}
+                </div>
+              </div>
+              <span className={`
+                flex items-center gap-3 text-sm transition-all duration-200
+                ${filters.category === cat.text
+                  ? 'text-[#6C1313] font-medium'
+                  : 'text-gray-700 group-hover:text-gray-900'
+                }
+              `}>
+                <cat.icon className={`
+                  h-6 w-6 transition-all duration-200
+                  ${filters.category === cat.text
+                    ? 'text-[#6C1313]'
+                    : 'text-gray-600 group-hover:text-gray-700'
+                  }
+                `} />
                 {cat.text}
               </span>
             </label>
@@ -87,19 +153,6 @@ export default function FilterSidebar({ filters, setFilters }) {
         </div>
       </div>
 
-      {/* Estado */}
-      <div className="mb-4">
-        <h3 className="text-sm font-medium text-gray-700 mb-2">Estado</h3>
-        <select
-          value={filters.status}
-          onChange={(e) => handleChange("status", e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C1313]"
-        >
-          <option value="">Todos</option>
-          <option value="open">Abierto</option>
-          <option value="closed">Cerrado</option>
-        </select>
-      </div>
 
       {/* Modalidad */}
       <div className="mb-4">
@@ -107,7 +160,7 @@ export default function FilterSidebar({ filters, setFilters }) {
         <select
           value={filters.modality}
           onChange={(e) => handleChange("modality", e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C1313]"
+          className="w-full text-black rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C1313]"
         >
           <option value="">Todos</option>
           <option value="presencial">Presencial</option>
@@ -116,33 +169,92 @@ export default function FilterSidebar({ filters, setFilters }) {
       </div>
 
       {/* Duración */}
-      <div className="mb-4">
-        <h3 className="text-sm font-medium text-gray-700 mb-2">
+      <div className="mb-6">
+        <h3 className="text-sm font-medium text-gray-700 mb-3">
           Duración (horas)
         </h3>
-        <div className="flex gap-2 items-center">
-          <input
-            type="number"
-            placeholder="Mín"
-            value={filters.minHours}
-            onChange={(e) => handleChange("minHours", e.target.value)}
-            className="w-24 rounded-lg border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C1313]"
-          />
-          <span className="text-sm">-</span>
-          <input
-            type="number"
-            placeholder="Máx"
-            value={filters.maxHours}
-            onChange={(e) => handleChange("maxHours", e.target.value)}
-            className="w-24 rounded-lg border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C1313]"
-          />
+        <div className="space-y-3">
+          {/* Opción para mostrar todas las duraciones */}
+          <label className="flex items-center gap-3 cursor-pointer group transition-all duration-200 hover:bg-gray-50 p-2 rounded-lg -m-2">
+            <div className="relative">
+              <input
+                type="radio"
+                name="duration"
+                value=""
+                checked={filters.duration === ""}
+                onChange={(e) => handleChange("duration", e.target.value)}
+                className="sr-only"
+              />
+                <div className={`
+                  w-5 h-5 border-2 rounded-full transition-all duration-200 flex items-center justify-center
+                  ${filters.duration === ""
+                    ? 'bg-[#6C1313] border-[#6C1313] text-white'
+                    : 'bg-white border-gray-300 hover:border-[#6C1313] hover:shadow-sm focus:outline-none focus:border-[#6C1313] focus:shadow-md active:border-[#6C1313] active:shadow-sm'
+                  }
+                `}>
+                {filters.duration === "" && (
+                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                )}
+              </div>
+            </div>
+            <span className={`
+              flex items-center gap-3 text-sm transition-all duration-200
+              ${filters.duration === ""
+                ? 'text-[#6C1313] font-medium'
+                : 'text-gray-700 group-hover:text-gray-900'
+              }
+            `}>
+              Todas las duraciones
+            </span>
+          </label>
+
+          {[
+            { id: 'less10', text: 'Menos de 10 horas', range: [0, 9] },
+            { id: '10to19', text: 'Entre 10 a 19 horas', range: [10, 19] },
+            { id: '20to59', text: 'Entre 20 a 59 horas', range: [20, 59] },
+            { id: '60to99', text: 'Entre 60 a 99 horas', range: [60, 99] },
+            { id: '100plus', text: 'Más de 100 horas', range: [100, Infinity] },
+          ].map((duration) => (
+            <label key={duration.id} className="flex items-center gap-3 cursor-pointer group transition-all duration-200 hover:bg-gray-50 p-2 rounded-lg -m-2">
+              <div className="relative">
+                <input
+                  type="radio"
+                  name="duration"
+                  value={duration.id}
+                  checked={filters.duration === duration.id}
+                  onChange={(e) => handleChange("duration", e.target.value)}
+                  className="sr-only"
+                />
+                <div className={`
+                  w-5 h-5 border-2 rounded-full transition-all duration-200 flex items-center justify-center
+                  ${filters.duration === duration.id
+                    ? 'bg-[#6C1313] border-[#6C1313] text-white'
+                    : 'bg-white border-gray-300 hover:border-[#6C1313] hover:shadow-sm focus:outline-none focus:border-[#6C1313] focus:shadow-md active:border-[#6C1313] active:shadow-sm'
+                  }
+                `}>
+                  {filters.duration === duration.id && (
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                  )}
+                </div>
+              </div>
+              <span className={`
+                flex items-center gap-3 text-sm transition-all duration-200
+                ${filters.duration === duration.id
+                  ? 'text-[#6C1313] font-medium'
+                  : 'text-gray-700 group-hover:text-gray-900'
+                }
+              `}>
+                {duration.text}
+              </span>
+            </label>
+          ))}
         </div>
       </div>
 
       <div className="mt-6 flex gap-2">
         <button
           onClick={resetFilters}
-          className="flex-1 bg-[#6C1313] text-white py-2 rounded-lg text-sm"
+          className="flex-1 bg-[#6C1313] text-white py-2 rounded-lg text-sm transition-all duration-200 hover:bg-[#5a0f0f] focus:outline-none focus:bg-[#5a0f0f] focus:ring-2 focus:ring-[#6C1313] focus:ring-opacity-50 active:bg-[#4a0c0c]"
         >
           Limpiar
         </button>
@@ -158,8 +270,8 @@ export default function FilterSidebar({ filters, setFilters }) {
         aria-label="Abrir filtros"
         type="button"
       >
-        <FunnelIcon className="h-5 w-5 text-gray-600" />
-        <span className="text-sm font-medium text-gray-700">Filtros</span>
+        <FunnelIcon className="h-5 w-5 text-white" />
+        <span className="text-sm font-medium text-white">Filtros</span>
       </button>
 
       {/* Sidebar para desktop */}

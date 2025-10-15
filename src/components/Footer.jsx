@@ -9,24 +9,17 @@ export default function Footer() {
               AOS.refresh();
   }, []);
   return (
-    <footer className="bg-gray-900 agray mt-15" data-aos="fade-down">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="flex flex-col items-center md:items-start space-y-4">
-          <p className="text-center md:text-left max-w-md">
+    <footer className="bg-gray-900" data-aos="fade-down">
+      <div className="max-w-7xl mx-auto px-6 py-12 ">
+        <div className="flex flex-col items-center space-y-4">
+          <p className="text-center md:text-left ">
             Innovamos con conocimiento, transformamos con tecnología y creamos oportunidades para el futuro.
           </p>
         </div>
 
-        {/* Redes sociales */}
-        <div className="mt-6 flex justify-center md:justify-start space-x-6">
-          <a href="#" className="hover:text-white"><FaFacebook /></a>
-          <a href="#" className="hover:text-white"><FaInstagram />  </a>
-          <a href="#" className="hover:text-white"><FaTwitter /></a>
-        </div>
-
         {/* Links */}
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div>
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center">
+          <div className="text-center md:text-left">
             <h3 className="text-white font-semibold mb-3">Contacto</h3>
             <ul className="space-y-2">
               <li>
@@ -55,15 +48,26 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-          <div>
-            <h3 className="text-white font-semibold mb-3">Coordinadores</h3>
+          <div className="text-center md:text-left">
+            <h3 className="text-white font-semibold mb-3">FISEI</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="agray">Ing. Franklin Mayorga, Mg. - Decano FISEI</a></li>
-              <li><a href="#" className="agray">Ing. Luis Morales, Mg. - Subdecano FISEI</a></li>
-              <li><a href="#" className="agray">Ing. Daniel Jerez, Mg. - Responsable CTT</a></li>
+              <li><a href="#" className="agray">Decano - Ing. Franklin Mayorga, Mg.</a></li>
+              <li><a href="#" className="agray">Subdecano - Ing. Luis Morales, Mg.</a></li>
+              <li><a href="#" className="agray">Responsable - Ing. Daniel Jerez, Mg.</a></li>
             </ul>
           </div>
+          <div className="text-center md:text-left">
+            <h3 className="text-white font-semibold mb-3">Redes Sociales</h3>
+            <div className="mt-6 flex justify-center space-x-6">
+              <a href="#" className="hover:text-white"><FaFacebook /></a>
+              <a href="#" className="hover:text-white"><FaInstagram />  </a>
+              <a href="#" className="hover:text-white"><FaTwitter /></a>
+            </div>
+            <h3 className="text-white font-semibold mb-3 mt-5">Información</h3>
+            <button className="text-sm"> Solicitar información CTT</button>
+          </div>
         </div>
+        
         <div className="mt-12 border-t border-gray-700 pt-6 text-center">
           <div className="mt-3">
             <p className="text-sm agray">&copy; 2025 Centro de Transferencia y Desarrollo de Tecnologías, Universidad Técnica de Ambato. Inc. All rights reserved.</p>

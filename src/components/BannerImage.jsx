@@ -20,7 +20,7 @@ export default function BannerImage({buttons, slides}) {
         AOS.refresh();
     }, []);
   return (
-    <div className="mt-15 relative w-full h-[900px] lg:h-[600px] overflow-hidden">
+    <div className="relative w-full h-[900px] lg:h-[600px] overflow-hidden bg-white">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
