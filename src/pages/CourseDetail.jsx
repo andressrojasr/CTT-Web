@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { getCourseById } from "../api/courses";
+import { enrollInCourse } from "../api/inscripciones";
 import CourseHeader from "../components/courses/CourseHeader";
 import CourseContent from "../components/courses/CourseContent";
 import CourseRequirements from "../components/courses/CourseRequirements";
@@ -9,13 +10,60 @@ import CourseSidebar from "../components/courses/CourseSidebar";
 import CourseDates from "../components/courses/CourseDates";
 import CourseObjectives from "../components/courses/CourseObjetives";
 import CourseMaterials from "../components/courses/CourseMaterials";
+import EnrollmentModal from "../components/EnrollmentModal";
 
 export default function CourseDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [enrolling, setEnrolling] = useState(false);
+    const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
+    const [enrollmentData, setEnrollmentData] = useState(null);
+    const [shouldAutoEnroll, setShouldAutoEnroll] = useState(false);
+    const [enrollmentError, setEnrollmentError] = useState(null);
+
+    const handleEnroll = useCallback(async () => {
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
+
+        if (!token || !user) {
+            // Determinar la ruta actual para guardarla correctamente
+            const currentPath = location.pathname;
+            
+            // Guardar la intención de inscripción antes de redirigir
+            localStorage.setItem('pendingEnrollment', JSON.stringify({
+                courseId: id,
+                courseName: course?.title || 'Curso',
+                returnPath: currentPath
+            }));
+            navigate('/login', { state: { from: location } });
+            return;
+        }
+
+        try {
+            setEnrolling(true);
+            setEnrollmentError(null);
+            const userData = JSON.parse(user);
+            const response = await enrollInCourse(userData.id, parseInt(id));
+            setEnrollmentData(response);
+            setShowEnrollmentModal(true);
+        } catch (err) {
+
+            if (err.message === 'UNAUTHORIZED') {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                navigate('/login');
+            } else {
+                setEnrollmentError(err.message);
+                setShowEnrollmentModal(true);
+            }
+        } finally {
+            setEnrolling(false);
+        }
+    }, [id, course?.title, location, navigate]);
 
     useEffect(() => {
         const loadCourse = async () => {
@@ -23,6 +71,17 @@ export default function CourseDetail() {
                 setLoading(true);
                 const courseData = await getCourseById(id);
                 setCourse(courseData);
+                
+                // Verificar si hay una inscripción pendiente después de login
+                if (location.state?.enrollCourseId && location.state.enrollCourseId === parseInt(id)) {
+                    const pendingEnrollment = localStorage.getItem('pendingEnrollment');
+                    if (pendingEnrollment) {
+                        localStorage.removeItem('pendingEnrollment');
+                        setShouldAutoEnroll(true);
+                    }
+                    // Limpiar el estado
+                    window.history.replaceState({}, document.title);
+                }
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -33,7 +92,26 @@ export default function CourseDetail() {
         if (id) {
             loadCourse();
         }
-    }, [id]);
+    }, [id, location.state]);
+
+    // Efecto separado para ejecutar la inscripción automática cuando el curso esté cargado
+    useEffect(() => {
+        if (shouldAutoEnroll && course && !loading && !enrolling) {
+            setShouldAutoEnroll(false);
+            handleEnroll();
+        }
+    }, [shouldAutoEnroll, course, loading, enrolling, handleEnroll]);
+
+    const handleGoBack = () => {
+        // Determinar de dónde vino el usuario
+        const isDashboard = location.pathname.startsWith('/dashboard');
+        
+        if (isDashboard) {
+            navigate('/dashboard/cursos');
+        } else {
+            navigate('/courses');
+        }
+    };
 
     if (loading) {
         return (
@@ -87,7 +165,7 @@ export default function CourseDetail() {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <button
-                    onClick={() => navigate(-1)}
+                    onClick={handleGoBack}
                     className="flex items-center text-[#6C1313] hover:text-[#5a0f0f] transition-colors font-medium"
                 >
                     <ArrowLeftIcon className="h-5 w-5 mr-2" />
@@ -99,7 +177,7 @@ export default function CourseDetail() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content */}
                     <div className="lg:col-span-2">
-                        <CourseHeader course={course} />
+                        <CourseHeader course={course} onEnroll={handleEnroll} enrolling={enrolling} />
                         <CourseDates course={course} />
                         <CourseObjectives course={course} />
                         <CourseContent course={course} />
@@ -109,10 +187,21 @@ export default function CourseDetail() {
 
                     {/* Sidebar */}
                     <div className="lg:col-span-1">
-                        <CourseSidebar course={course} />
+                        <CourseSidebar course={course} onEnroll={handleEnroll} enrolling={enrolling} />
                     </div>
                 </div>
             </div>
+
+            <EnrollmentModal
+                isOpen={showEnrollmentModal}
+                onClose={() => {
+                    setShowEnrollmentModal(false);
+                    setEnrollmentError(null);
+                }}
+                enrollmentData={enrollmentData}
+                courseName={course?.title}
+                error={enrollmentError}
+            />
         </div>
     );
 }

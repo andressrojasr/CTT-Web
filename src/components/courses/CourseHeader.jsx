@@ -1,6 +1,6 @@
 import { ClockIcon, UserGroupIcon, MapPinIcon } from "@heroicons/react/24/outline";
 
-export default function CourseHeader({ course }) {
+export default function CourseHeader({ course, onEnroll, enrolling }) {
     return (
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
             <div className="relative">
@@ -114,8 +114,12 @@ export default function CourseHeader({ course }) {
 
                 {/* Enroll Button */}
                 <div className="text-center">
-                    <button className="bg-[#6C1313] hover:bg-[#5a0f0f] text-white font-bold py-4 px-8 rounded-xl text-lg transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 w-full sm:w-auto">
-                        Inscríbete Ahora
+                    <button 
+                        onClick={onEnroll}
+                        disabled={enrolling}
+                        className="bg-[#6C1313] hover:bg-[#5a0f0f] text-white font-bold py-4 px-8 rounded-xl text-lg transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {enrolling ? 'Inscribiendo...' : 'Inscríbete Ahora'}
                     </button>
                     <p className="text-sm text-gray-500 mt-2">
                         Selecciona tu categoría al momento de la inscripción

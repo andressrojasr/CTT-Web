@@ -1,10 +1,10 @@
 import { UserGroupIcon } from "@heroicons/react/24/outline";
 
-export default function CourseSidebar({ course }) {
+export default function CourseSidebar({ course, onEnroll, enrolling }) {
     return (
-        <div className="sticky top-8 space-y-6">
+        <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
             {/* Course Details Card */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
+            <div className="space-y-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                     Detalles del Curso
                 </h3>
@@ -41,7 +41,7 @@ export default function CourseSidebar({ course }) {
             </div>
 
             {/* Organizers Card */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
+            <div className="bg-white rounded-2xl shadow-sm p-6 mt-4">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                     Organizadores
                 </h3>
@@ -57,7 +57,7 @@ export default function CourseSidebar({ course }) {
             </div>
 
             {/* Target Audience Card */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
+            <div className="bg-white rounded-2xl shadow-sm p-6 mt-4">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                     Público Objetivo
                 </h3>
@@ -71,6 +71,15 @@ export default function CourseSidebar({ course }) {
                     ))}
                 </div>
             </div>
+
+            {/* Enroll Button */}
+            <button
+                onClick={onEnroll}
+                disabled={enrolling}
+                className="w-full bg-[#6C1313] hover:bg-[#5a0f0f] text-white font-bold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+            >
+                {enrolling ? 'Inscribiendo...' : 'Inscribirse'}
+            </button>
         </div>
     );
 }

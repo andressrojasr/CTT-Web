@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { loginComplete } from "../../api/auth"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 
 
 export default function Login () {
@@ -9,6 +9,7 @@ export default function Login () {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,8 +24,29 @@ export default function Login () {
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
 
-      // Redirige al panel o dashboard
-      navigate('/dashboard');
+      // Verificar si hay una inscripción pendiente
+      const pendingEnrollment = localStorage.getItem('pendingEnrollment');
+      if (pendingEnrollment) {
+        const { courseId, returnPath } = JSON.parse(pendingEnrollment);
+        
+        // Determinar la ruta correcta basada en si viene de dashboard o no
+        let targetPath = returnPath;
+        if (returnPath.startsWith('/course/')) {
+          // Si viene de la ruta pública, redirigir a la ruta del dashboard
+          targetPath = returnPath.replace('/course/', '/dashboard/curso/');
+        }
+        
+        // NO eliminar pendingEnrollment aquí, se eliminará en el destino
+        // Redirigir de vuelta con el estado de inscripción pendiente
+        navigate(targetPath, { 
+          state: { enrollCourseId: parseInt(courseId) },
+          replace: true 
+        });
+      } else {
+        // Si viene de alguna página específica, volver ahí
+        const from = location.state?.from?.pathname || '/dashboard';
+        navigate(from, { replace: true });
+      }
     } catch (error) {
       // Si falla, no se guarda nada
       setErrorMessage(error.message);

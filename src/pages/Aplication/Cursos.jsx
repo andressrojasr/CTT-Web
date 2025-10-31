@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getCourses, getCoursesByCategory, searchCourses } from "../../api/courses";
+import { enrollInCourse } from "../../api/inscripciones";
 import { EyeIcon } from "@heroicons/react/16/solid";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Table from "../../components/Table";
+import EnrollmentModal from "../../components/EnrollmentModal";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
@@ -23,7 +25,52 @@ export default function Cursos() {
   const [categorySelected, setCategorySelected] = useState(null);
   const [statusFilter, setStatusFilter] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [enrolling, setEnrolling] = useState(false);
+  const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
+  const [enrollmentData, setEnrollmentData] = useState(null);
+  const [selectedCourseName, setSelectedCourseName] = useState("");
+  const [coursesLoaded, setCoursesLoaded] = useState(false);
+  const [enrollmentError, setEnrollmentError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleEnroll = useCallback(async (courseId, courseName) => {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+
+    if (!token || !user) {
+      // Guardar la intención de inscripción antes de redirigir
+      localStorage.setItem('pendingEnrollment', JSON.stringify({
+        courseId,
+        courseName,
+        returnPath: location.pathname
+      }));
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
+    try {
+      setEnrolling(true);
+      setEnrollmentError(null);
+      const userData = JSON.parse(user);
+      const response = await enrollInCourse(userData.id, parseInt(courseId));
+      setEnrollmentData(response);
+      setSelectedCourseName(courseName);
+      setShowEnrollmentModal(true);
+    } catch (err) {
+      if (err.message === 'UNAUTHORIZED') {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/login');
+      } else {
+        setEnrollmentError(err.message);
+        setSelectedCourseName(courseName);
+        setShowEnrollmentModal(true);
+      }
+    } finally {
+      setEnrolling(false);
+    }
+  }, [navigate, location.pathname]);
 
   const loadCourses = async (
     category = "Todos",
@@ -43,8 +90,8 @@ export default function Cursos() {
       } else {
         // Si no hay búsqueda, usar la lógica existente
         response = category && category !== "Todos"
-          ? await getCourses(pageRequested, pageSizeRequested, "activo", category)
-          : await getCourses(pageRequested, pageSizeRequested, "activo");
+          ? await getCourses(pageRequested, pageSizeRequested, "activo", category , localStorage.getItem('token'))
+          : await getCourses(pageRequested, pageSizeRequested, "activo", null, localStorage.getItem('token'));
       }
       
       // Manejar ambos formatos de respuesta
@@ -69,7 +116,9 @@ export default function Cursos() {
               <EyeIcon className="h-5 w-5 inline-block" />
             </button>
             <button
-              onClick={() => navigate(`/dashboard/curso/${course.id}/editar`)}
+              onClick={() => handleEnroll(course.id, course.title)}
+              disabled={enrolling}
+              className="bg-[#6C1313] hover:bg-[#5a0f0f] text-white px-3 py-1 rounded text-sm disabled:opacity-50"
             >
               Inscribirse
             </button>
@@ -81,6 +130,7 @@ export default function Cursos() {
       setPage(pageRequested);
       setPageSize(respPageSize);
       setTotalPages(respTotalPages);
+      setCoursesLoaded(true);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -93,6 +143,26 @@ export default function Cursos() {
     AOS.refresh();
     loadCourses();
   }, []);
+
+  // Efecto separado para manejar la inscripción pendiente después de cargar los cursos
+  useEffect(() => {
+    const checkPendingEnrollment = async () => {
+      if (coursesLoaded && location.state?.enrollCourseId) {
+        const pendingEnrollment = localStorage.getItem('pendingEnrollment');
+        if (pendingEnrollment) {
+          const { courseId, courseName } = JSON.parse(pendingEnrollment);
+          localStorage.removeItem('pendingEnrollment');
+          console.log('Ejecutando inscripción automática:', courseId, courseName);
+          // Ejecutar la inscripción automáticamente
+          await handleEnroll(courseId, courseName);
+        }
+        // Limpiar el estado
+        window.history.replaceState({}, document.title);
+      }
+    };
+    
+    checkPendingEnrollment();
+  }, [coursesLoaded, location.state, handleEnroll]);
 
   // Efecto para manejar la búsqueda con debounce
   useEffect(() => {
@@ -156,6 +226,17 @@ export default function Cursos() {
         />
       </div>
       {error && <div className="text-red-600 mt-2">{error}</div>}
+
+      <EnrollmentModal
+        isOpen={showEnrollmentModal}
+        onClose={() => {
+          setShowEnrollmentModal(false);
+          setEnrollmentError(null);
+        }}
+        enrollmentData={enrollmentData}
+        courseName={selectedCourseName}
+        error={enrollmentError}
+      />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import api from './api';
 
-export const getCourses = async (page = 1, pageSize = 10, status = null, category = null) => {
+export const getCourses = async (page = 1, pageSize = 10, status = null, category = null, token = null) => {
     try {
         const params = {
             page,
@@ -16,10 +16,14 @@ export const getCourses = async (page = 1, pageSize = 10, status = null, categor
         if (category) {
             params.category = category;
         }
-        
-        const response = await api.get('/courses', { params });
+        let response;
+        if (token) {
+            response = await api.get('/courses/available', { params, headers: { 'Authorization': `Bearer ${token}` } });
+        }
+        else {
+            response = await api.get('/courses', { params });      
+        }
         const data = response.data;
-
         if (!data.courses) {
             throw new Error('No se encontraron cursos en la respuesta de la API');
         }
