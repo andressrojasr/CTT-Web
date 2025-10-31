@@ -54,7 +54,7 @@ export default function CourseDetail() {
                         <h2 className="text-lg font-semibold mb-2">Error al cargar el curso</h2>
                         <p className="mb-4">{error}</p>
                         <button
-                            onClick={() => navigate('/courses')}
+                            onClick={() => navigate(-1)}
                             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors"
                         >
                             Volver a Cursos
@@ -71,7 +71,7 @@ export default function CourseDetail() {
                 <div className="text-center">
                     <p className="text-gray-500 text-lg">Curso no encontrado</p>
                     <button
-                        onClick={() => navigate('/courses')}
+                        onClick={() => navigate(-1)}
                         className="mt-4 bg-[#6C1313] hover:bg-[#5a0f0f] text-white font-bold py-2 px-6 rounded transition-colors"
                     >
                         Volver a Cursos
@@ -87,7 +87,7 @@ export default function CourseDetail() {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <button
-                    onClick={() => navigate('/courses')}
+                    onClick={() => navigate(-1)}
                     className="flex items-center text-[#6C1313] hover:text-[#5a0f0f] transition-colors font-medium"
                 >
                     <ArrowLeftIcon className="h-5 w-5 mr-2" />

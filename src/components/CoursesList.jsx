@@ -42,7 +42,7 @@ export default function CoursesList({filters}) {
             const transformedCourses = data.courses.map(course => ({
                 title: course.title,
                 image: course.course_image_detail,
-                isOpen: course.status === 'Activo',
+                isOpen: course.status === 'activo',
                 hours: course.requirements?.hours?.total?.toString() || '0',
                 description: course.description,
                 id: course.id,

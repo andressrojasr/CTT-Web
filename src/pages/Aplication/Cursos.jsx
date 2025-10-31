@@ -65,11 +65,11 @@ export default function Cursos() {
         modalidad: course.requirements?.modality?.toString() || "No definida",
         acciones: (
           <div className="flex gap-2">
-            <button onClick={() => navigate(`/dashboard/cursos/${course.id}`)}>
+            <button onClick={() => navigate(`/dashboard/curso/${course.id}`)}>
               <EyeIcon className="h-5 w-5 inline-block" />
             </button>
             <button
-              onClick={() => navigate(`/dashboard/cursos/${course.id}/editar`)}
+              onClick={() => navigate(`/dashboard/curso/${course.id}/editar`)}
             >
               Inscribirse
             </button>

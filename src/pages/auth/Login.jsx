@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { login } from "../../api/auth"
+import { loginComplete } from "../../api/auth"
 import { useNavigate } from "react-router-dom"
 
 
@@ -16,19 +16,17 @@ export default function Login () {
     setErrorMessage('');
 
     try {
-      // 👇 Llamada al servicio login()
-      const response = await login(email, password);
+      // Llamada al servicio loginComplete() que obtiene token y perfil
+      const { token, user } = await loginComplete(email, password);
 
-      // Si tu API devuelve un token o user info
-      if (response.access_token) {
-        localStorage.setItem('token', response.access_token);
-      }
-
-      console.log('Usuario autenticado:', response);
+      // Guardar token y datos del usuario en localStorage
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
 
       // Redirige al panel o dashboard
       navigate('/dashboard');
     } catch (error) {
+      // Si falla, no se guarda nada
       setErrorMessage(error.message);
     } finally {
       setLoading(false);
