@@ -8,10 +8,10 @@ import EnrollmentModal from "../../components/EnrollmentModal";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-const headers = ["titulo", "categoria", "horas", "modalidad", "status", "acciones"];
+const headers = ["titulo", "categoria", "horas", "modalidad", "acciones"];
 
 const filters = {
-  categoria: ["Todos", "TICS", "Educativo", "Software", "Electrónica", "Congresos"],
+  categoria: ["TICS", "Educativo", "Software", "Electrónica", "Congresos"],
 };
 
 export default function Cursos() {
@@ -31,6 +31,7 @@ export default function Cursos() {
   const [selectedCourseName, setSelectedCourseName] = useState("");
   const [coursesLoaded, setCoursesLoaded] = useState(false);
   const [enrollmentError, setEnrollmentError] = useState(null);
+  const [isInitialMount, setIsInitialMount] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -76,7 +77,7 @@ export default function Cursos() {
     category = "Todos",
     pageRequested = 1,
     pageSizeRequested = pageSize,
-    query = searchQuery
+    query = ""
   ) => {
     try {
       setLoading(true);
@@ -86,11 +87,11 @@ export default function Cursos() {
       
       // Si hay búsqueda, usar el endpoint de búsqueda
       if (query && query.trim().length > 0) {
-        response = await searchCourses(query.trim(), pageRequested, pageSizeRequested, "activo");
+        response = await searchCourses(query.trim(), pageRequested, pageSizeRequested, "activo", localStorage.getItem('token'));
       } else {
         // Si no hay búsqueda, usar la lógica existente
         response = category && category !== "Todos"
-          ? await getCourses(pageRequested, pageSizeRequested, "activo", category , localStorage.getItem('token'))
+          ? await getCourses(pageRequested, pageSizeRequested, "activo", category, localStorage.getItem('token'))
           : await getCourses(pageRequested, pageSizeRequested, "activo", null, localStorage.getItem('token'));
       }
       
@@ -133,6 +134,7 @@ export default function Cursos() {
       setCoursesLoaded(true);
     } catch (err) {
       setError(err.message);
+      console.error('Error al cargar cursos:', err);
     } finally {
       setLoading(false);
     }
@@ -142,6 +144,7 @@ export default function Cursos() {
     AOS.init({ duration: 1000, once: false, mirror: true });
     AOS.refresh();
     loadCourses();
+    setIsInitialMount(false);
   }, []);
 
   // Efecto separado para manejar la inscripción pendiente después de cargar los cursos
@@ -166,19 +169,24 @@ export default function Cursos() {
 
   // Efecto para manejar la búsqueda con debounce
   useEffect(() => {
+    // No ejecutar en el montaje inicial
+    if (isInitialMount) {
+      return;
+    }
+
     const delayDebounceFn = setTimeout(() => {
-      loadCourses(categorySelected || "Todos", 1, pageSize, statusFilter, searchQuery);
+      loadCourses(categorySelected || "Todos", 1, pageSize, searchQuery);
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery]);
+  }, [searchQuery, categorySelected, pageSize, isInitialMount]);
 
   const handleFilterChange = (filterColumn, value) => {
     if (filterColumn === "categoria") {
       const categoryValue = value === "Todos" ? null : value;
       setCategorySelected(categoryValue);
       // Resetear a página 1 cuando cambia la categoría
-      loadCourses(categoryValue || "Todos", 1, pageSize, statusFilter, searchQuery);
+      loadCourses(categoryValue || "Todos", 1, pageSize, searchQuery);
     } else if (filterColumn === "estado") {
       // Mapear valores de UI a valores de API
       let statusValue = null;
@@ -190,7 +198,7 @@ export default function Cursos() {
       
       setStatusFilter(statusValue);
       // Resetear a página 1 cuando cambia el filtro
-      loadCourses(categorySelected || "Todos", 1, pageSize, statusValue, searchQuery);
+      loadCourses(categorySelected || "Todos", 1, pageSize, searchQuery);
     }
   };
 
@@ -215,11 +223,11 @@ export default function Cursos() {
           totalPages={totalPages}
           loading={loading}
           onPageChange={(newPage) =>
-            loadCourses(categorySelected || "Todos", newPage, pageSize, statusFilter, searchQuery)
+            loadCourses(categorySelected || "Todos", newPage, pageSize, searchQuery)
           }
           onPageSizeChange={(newSize) => {
             setPageSize(newSize);
-            loadCourses(categorySelected || "Todos", 1, newSize, statusFilter, searchQuery);
+            loadCourses(categorySelected || "Todos", 1, newSize, searchQuery);
           }}
           onFilterChange={handleFilterChange}
           onSearchChange={handleSearchChange}
