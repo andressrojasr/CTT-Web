@@ -99,18 +99,18 @@ export default function Nav() {
               {showUserMenu && (
                 <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                   <div className="p-4 border-b border-gray-200">
-                    <p className="font-semibold text-gray-900">{user.name || user.username}</p>
+                    <p className="font-semibold text-gray-900">{user.first_name + " " + user.first_last_name}</p>
                     <p className="text-sm text-gray-500">{user.email}</p>
-                    <p className="text-xs text-green-600 mt-1">✓ Sesión iniciada</p>
+                    <p className="text-xs text-green-600 mt-1">Sesión iniciada</p>
                   </div>
                   <div className="p-2">
                     <Link
                       to="/dashboard/cursos"
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-[#6C1313] hover:text-white rounded-md transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-[#6C1313]  rounded-md transition-colors"
                       onClick={() => setShowUserMenu(false)}
                     >
                       <ArrowRightOnRectangleIcon className="size-5" />
-                      Ir al Dashboard
+                      Ir a la plataforma
                     </Link>
                     <button
                       onClick={handleLogout}
@@ -219,7 +219,7 @@ export default function Nav() {
                     <div className="flex items-center gap-3 mb-2">
                       <UserCircleIcon className="size-10 text-[#6C1313]" />
                       <div>
-                        <p className="font-semibold text-gray-900">{user.name || user.username}</p>
+                        <p className="font-semibold text-gray-900">{user.first_name + " " + user.first_last_name}</p>
                         <p className="text-sm text-gray-500">{user.email}</p>
                       </div>
                     </div>
@@ -229,7 +229,7 @@ export default function Nav() {
                     onClick={() => setMobileMenuOpen(false)}
                     className="block w-full px-4 py-3 text-center font-semibold text-white bg-[#6C1313] rounded-lg hover:bg-[#8B1818] transition-colors"
                   >
-                    Ir al Dashboard
+                    Ir a la plataforma
                   </Link>
                   <button
                     onClick={handleLogout}
