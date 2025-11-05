@@ -1,15 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
-import Home from './pages/home.jsx'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { Header, Nav, Footer } from './components/layout'
+import Home from './pages/Home'
+import Courses from './pages/Courses'
+import CourseDetail from './pages/CourseDetail'
+import Nosotros from './pages/Nosotros'
+import Contact from './pages/Contact'
+import Login from './pages/auth/Login'
+import Register from './pages/auth/Register'
+import Dashboard from './pages/application/Dashboard'
+import Cursos from './pages/application/Cursos'
 
 function App() {
+  const location = useLocation()
+  const isLogin = location.pathname === '/login' || location.pathname === '/register' || location.pathname.startsWith('/dashboard')
+
+  // Componente para proteger rutas (solo entra si hay token)
+  const PrivateRoute = ({ children }) => {
+    const token = localStorage.getItem('token');
+    return token ? children : <Navigate to="/login" replace />;
+  };
 
   return (
-    <>
-      <Home />
-    </>
+      <>
+        {!isLogin && <Header />}
+        {!isLogin && <Nav />}
+
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/course/:id" element={<CourseDetail />} />
+          <Route path="/nosotros" element={<Nosotros />} />
+          <Route path="/contact" element={<Contact />} />
+
+          {/* Rutas privadas dentro del dashboard */}
+          <Route
+            path="/dashboard/*"
+            element={
+              <PrivateRoute>
+                <Dashboard/>
+              </PrivateRoute>
+            }
+            
+          >
+            <Route index element={<Navigate to="cursos" replace />} />  
+            <Route path="cursos" element={<Cursos />} />
+            <Route path="curso/:id" element={<CourseDetail />} />
+            {/* Otras rutas privadas pueden ir aquí */}
+          </Route>
+
+          <Route path="*" element={<Home />} />
+        </Routes>
+
+        {!isLogin && <Footer />}
+      </>
   )
 }
 
