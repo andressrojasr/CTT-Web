@@ -7,6 +7,7 @@ import {
   ComputerDesktopIcon,
   FunnelIcon,
   XMarkIcon,
+  UsersIcon
 } from "@heroicons/react/24/outline";
 
 const categories = [
@@ -14,6 +15,7 @@ const categories = [
   { id: 2, text: "Educativo", icon: BuildingLibraryIcon },
   { id: 3, text: "Software", icon: CommandLineIcon },
   { id: 4, text: "Electrónica", icon: CpuChipIcon },
+  { id: 5, text: "Congresos", icon: UsersIcon },
 ];
 
 export default function FilterSidebar({ filters, setFilters }) {

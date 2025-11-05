@@ -1,6 +1,4 @@
-import Carrusel from "../components/carrussel"
-import Section from "../components/section";
-import BannerImage from "../components/BannerImage";
+import { Carousel, Section, BannerImage } from "../components/home";
 const contentHero =[
   {
     id: 1,
@@ -61,7 +59,7 @@ const slides = [
 export default function Nosotros() {
   return (
     <>
-        <Carrusel slides={contentHero} height="400px" background={'white'} colorText={'#6C1313'} />
+        <Carousel slides={contentHero} height="400px" background={'white'} colorText={'#6C1313'} />
         <Section item={item}/>
         <BannerImage slides={slides} />
     </>

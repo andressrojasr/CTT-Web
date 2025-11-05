@@ -1,6 +1,6 @@
 import { ClockIcon, UserGroupIcon, MapPinIcon } from "@heroicons/react/24/outline";
 
-export default function CourseHeader({ course }) {
+export default function CourseHeader({ course, onEnroll, enrolling }) {
     return (
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
             <div className="relative">
@@ -10,17 +10,17 @@ export default function CourseHeader({ course }) {
                     className="w-full h-64 sm:h-80 object-cover"
                 />
                 <div className="absolute top-4 left-4">
-                    <span className="bg-[#6C1313] text-white px-3 py-1 rounded-full text-sm font-medium">
+                    <span className="bg-[#6C1313] text-white px-3 py-1 rounded-full text-xl font-medium">
                         {course.category}
                     </span>
                 </div>
                 <div className="absolute top-4 right-4">
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        course.status === 'Activo'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
+                    <span className={`px-3 py-1 rounded-full text-xl font-medium bg ${
+                        course.status === 'activo'
+                        ? 'bg-green-100 text-black'
+                        :'bg-red-100 text-red-800'
                     }`}>
-                        {course.status}
+                        {course.status === 'activo' ? 'Activo' : 'Cerrado'}
                     </span>
                 </div>
             </div>
@@ -114,8 +114,12 @@ export default function CourseHeader({ course }) {
 
                 {/* Enroll Button */}
                 <div className="text-center">
-                    <button className="bg-[#6C1313] hover:bg-[#5a0f0f] text-white font-bold py-4 px-8 rounded-xl text-lg transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 w-full sm:w-auto">
-                        Inscríbete Ahora
+                    <button 
+                        onClick={onEnroll}
+                        disabled={enrolling}
+                        className="bg-[#6C1313] hover:bg-[#5a0f0f] text-white font-bold py-4 px-8 rounded-xl text-lg transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {enrolling ? 'Inscribiendo...' : 'Inscríbete Ahora'}
                     </button>
                     <p className="text-sm text-gray-500 mt-2">
                         Selecciona tu categoría al momento de la inscripción

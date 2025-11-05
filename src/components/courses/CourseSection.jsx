@@ -1,10 +1,10 @@
-import { CpuChipIcon, BuildingLibraryIcon, CommandLineIcon, ComputerDesktopIcon, Squares2X2Icon } from "@heroicons/react/24/outline"
+import { CpuChipIcon, BuildingLibraryIcon, CommandLineIcon, ComputerDesktopIcon, Squares2X2Icon, ArrowRightEndOnRectangleIcon, UsersIcon } from "@heroicons/react/24/outline"
 import CardCourse from "./CardCourse"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AOS from "aos"
 import 'aos/dist/aos.css'
-import { getCourses, getCoursesByCategory } from "../api/api"
+import { getCourses, getCoursesByCategory } from "../../api/courses"
 
 
 const categories = [
@@ -13,6 +13,7 @@ const categories = [
     { id: 2, text: 'Educativo', icon: BuildingLibraryIcon, status: 'false' },
     { id: 3, text: 'Software', icon: CommandLineIcon, status: 'false' },
     { id: 4, text: 'Electrónica', icon: CpuChipIcon, status: 'false' },
+    { id: 5, text: 'Congresos', icon: UsersIcon, status: 'false' },
 ]
 
 export default function CourseSection({ filters }) {
@@ -28,17 +29,16 @@ export default function CourseSection({ filters }) {
             setLoading(true);
             setError(null);
 
-            // Si category es null o 'Todos', obtenemos todos los cursos
-            // Si category tiene un valor específico, filtramos por categoría
-            const coursesData = category && category !== 'Todos'
-                ? await getCoursesByCategory(category)
-                : await getCourses();
+            // Obtener solo 3 cursos para la sección de inicio
+            const data = category && category !== 'Todos'
+                ? await getCoursesByCategory(category, 1, 3, 'activo')
+                : await getCourses(1, 3, 'activo');
 
-            // Transformar los datos de la API para que coincidan con la estructura esperada por CardCourse
-            const transformedCourses = coursesData.map(course => ({
+            // Transformar los datos de la API
+            const transformedCourses = data.courses.map(course => ({
                 title: course.title,
-                image: course.course_image,
-                isOpen: course.status === 'Activo',
+                image: course.course_image_detail,
+                isOpen: course.status === 'activo',
                 hours: course.requirements?.hours?.total?.toString() || '0',
                 description: course.description,
                 id: course.id
@@ -81,14 +81,17 @@ export default function CourseSection({ filters }) {
                                     backgroundColor: activeCategory === category.text ? '#6C1313' : '#F5F5F5',
                                     color: activeCategory === category.text ? 'white' : '#6C1313'
                                 }}
-                                className="flex flex-col items-center justify-center text-center transition-all duration-200 hover:opacity-80"
+                                className="flex flex-col items-center justify-center text-center min-w-[150px] transition-all duration-200 hover:opacity-80"
                                 onClick={() => handleCategoryChange(category.text)}
                                 data-aos="zoom-in">
-                                <category.icon 
+                                <category.icon
                                     className={`h-20 w-20 mb-1 ${activeCategory === category.text ? 'text-white' : 'text-[#6C1313]'}`} 
                                     strokeWidth={0.5} 
                                 />
                                 <span>{category.text}</span>
+                                <button className="mt-2">
+                                    <ArrowRightEndOnRectangleIcon className="h-6 w-6 text-white" strokeWidth={0.9} />
+                                </button>
                             </button>
                         ))}
                     </div>

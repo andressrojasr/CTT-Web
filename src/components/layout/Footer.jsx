@@ -12,7 +12,7 @@ export default function Footer() {
     <footer className="bg-gray-900" data-aos="fade-down">
       <div className="max-w-7xl mx-auto px-6 py-12 ">
         <div className="flex flex-col items-center space-y-4">
-          <p className="text-center md:text-left ">
+          <p className="text-center md:text-left text-white agray">
             Innovamos con conocimiento, transformamos con tecnología y creamos oportunidades para el futuro.
           </p>
         </div>
@@ -53,7 +53,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><a href="#" className="agray">Decano - Ing. Franklin Mayorga, Mg.</a></li>
               <li><a href="#" className="agray">Subdecano - Ing. Luis Morales, Mg.</a></li>
-              <li><a href="#" className="agray">Responsable - Ing. Daniel Jerez, Mg.</a></li>
+              <li><a href="#" className="agray">Coordinador - Ing. Daniel Jerez, Mg.</a></li>
             </ul>
           </div>
           <div className="text-center md:text-left">

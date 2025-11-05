@@ -1,5 +1,5 @@
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
-import Carrusel from "../components/carrussel"
+import { Carousel } from "../components/home";
 const contentHero =[
   {
     id: 1,
@@ -13,7 +13,7 @@ const contentHero =[
 export default function Contact() {
   return (
     <>
-        <Carrusel slides={contentHero} height="400px" background={'white'} colorText={'#6C1313'} />
+        <Carousel slides={contentHero} height="400px" background={'white'} colorText={'#6C1313'} />
         <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
             <div
                 aria-hidden="true"
