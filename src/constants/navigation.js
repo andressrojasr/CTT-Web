@@ -22,8 +22,20 @@ export const itemsHeader = [
 
 // Menú del dashboard
 export const dashboardMenuItems = [
-  { name: "Cursos", path: "/dashboard/cursos" },
-  { name: "Estudiantes", path: "/dashboard/estudiantes" },
-  { name: "Reportes", path: "/dashboard/reports" },
-  { name: "Configuración", path: "/dashboard/settings" },
+  { 
+    name: "Cursos", 
+    path: "/dashboard/cursos",
+    subItems: [
+      { name: "Cursos Disponibles", path: "/dashboard/cursos/disponibles" },
+      { name: "Cursos Inscrito", path: "/dashboard/cursos/inscrito" }
+    ]
+  },
+   { 
+    name: "Ordenes de Pago", 
+    path: "/dashboard/ordenes",
+    subItems: [
+      { name: "Ordenes Pendientes", path: "/dashboard/ordenes/pendientes" },
+      { name: "Ordenes Completadas", path: "/dashboard/ordenes/completadas" }
+    ]
+  },
 ];

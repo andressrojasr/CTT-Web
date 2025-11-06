@@ -101,7 +101,7 @@ export default function CourseDetail() {
         const isDashboard = location.pathname.startsWith('/dashboard');
         
         if (isDashboard) {
-            navigate('/dashboard/cursos');
+            navigate('/dashboard/cursos/disponibles');
         } else {
             navigate('/courses');
         }

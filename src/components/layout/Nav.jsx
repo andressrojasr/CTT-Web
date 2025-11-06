@@ -107,7 +107,7 @@ export default function Nav() {
                   </div>
                   <div className="p-2">
                     <Link
-                      to="/dashboard/cursos"
+                      to="/dashboard/cursos/disponibles"
                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-[#6C1313]  rounded-md transition-colors"
                       onClick={() => setShowUserMenu(false)}
                     >
@@ -227,7 +227,7 @@ export default function Nav() {
                     </div>
                   </div>
                   <Link
-                    to="/dashboard/cursos"
+                    to="/dashboard/cursos/disponibles"
                     onClick={() => setMobileMenuOpen(false)}
                     className="block w-full px-4 py-3 text-center font-semibold text-white bg-[#6C1313] rounded-lg hover:bg-[#8B1818] transition-colors"
                   >

@@ -45,8 +45,8 @@ function App() {
             }
             
           >
-            <Route index element={<Navigate to="cursos" replace />} />  
-            <Route path="cursos" element={<Cursos />} />
+            <Route index element={<Navigate to="cursos/disponibles" replace />} />  
+            <Route path="cursos/disponibles" element={<Cursos />} />
             <Route path="curso/:id" element={<CourseDetail />} />
             {/* Otras rutas privadas pueden ir aquí */}
           </Route>
