@@ -89,9 +89,9 @@ export default function CourseSection({ filters }) {
                                     strokeWidth={0.5} 
                                 />
                                 <span>{category.text}</span>
-                                <button className="mt-2">
+                                <div className="mt-2 button">
                                     <ArrowRightEndOnRectangleIcon className="h-6 w-6 text-white" strokeWidth={0.9} />
-                                </button>
+                                </div>
                             </button>
                         ))}
                     </div>

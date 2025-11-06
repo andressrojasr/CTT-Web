@@ -4,6 +4,8 @@ import { Dialog, DialogPanel } from '@headlessui/react'
 import { useState, useEffect, useRef } from "react"
 import { mainNavigation, itemsHeader } from '../../constants/navigation'
 import { isAuthenticated, getUser, clearAuthData } from '../../utils/auth'
+import logoCTT from '../../assets/logoCTT.webp'
+import logoUTAPequeno from '../../assets/LogoUTAPequeño.png'
 
 export default function Nav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -62,7 +64,7 @@ export default function Nav() {
 
   return (
     <>
-      <nav aria-label="Global" className="sticky top-0 shadow-lg md:top-40 lg:top-30 z-50 w-full flex items-center justify-between p-6 lg:px-8 bg-[#FFFFFF] md:bg-[#6C1313] lg:bg-[#6C1313]">
+      <nav aria-label="Global" className="sticky top-0 shadow-lg  z-50 w-full flex items-center justify-between p-6 lg:px-8 bg-[#FFFFFF] md:bg-[#6C1313] lg:bg-[#6C1313]">
         <div className="lg:flex md:flex hidden lg:gap-x-12 md:gap-x-12 gap-4 lg:pl-30 md:pl-20">
           {mainNavigation.map((item) => (
             <NavLink
@@ -133,21 +135,21 @@ export default function Nav() {
             </Link>
           )}
         </div>
-        <div className="lg:hidden md:hidden  flex sm:flex sm:flex-1">
-          <a href="#" className="-m-1.5 p-1.5">
+        <div className="flex md:hidden lg:hidden flex-1 justify-start">
+          <a href="/" className="-m-1.5 p-1.5">
             <img
-              alt=""
-              src="src/assets/logoCTT.webp"
-              className="h-22 w-auto"
+              alt="Logo CTT"
+              src={logoCTT}
+              className="h-14 w-auto"
             />
           </a>
         </div>
-        <div className="lg:hidden md:hidden  flex sm:flex sm:flex-1">
-          <a href="#" className="-m-1.5 p-1.5">
+        <div className="flex md:hidden lg:hidden flex-1 justify-center">
+          <a href="/" className="-m-1.5 p-1.5">
             <img
-              alt=""
-              src="src/assets/logoUTAPequeño.png"
-              className="h-15 w-auto min-w-30"
+              alt="Logo UTA"
+              src={logoUTAPequeno}
+              className="h-12 w-auto"
             />
           </a>
         </div>
