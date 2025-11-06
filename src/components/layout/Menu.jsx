@@ -2,10 +2,12 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { dashboardMenuItems } from '../../constants/navigation'
 import { getUser, clearAuthData } from '../../utils/auth'
+import { ConfirmDialog } from '../ui'
 
 export default function Menu ({ items }) {
   const [isOpen, setIsOpen] = useState(false)
   const [user, setUser] = useState(null)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -13,9 +15,18 @@ export default function Menu ({ items }) {
     setUser(userData)
   }, [])
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
+    setShowLogoutConfirm(true)
+  }
+
+  const handleLogoutConfirm = () => {
     clearAuthData()
+    setShowLogoutConfirm(false)
     navigate('/')
+  }
+
+  const handleLogoutCancel = () => {
+    setShowLogoutConfirm(false)
   }
 
   const handleGoHome = () => {
@@ -139,7 +150,7 @@ export default function Menu ({ items }) {
         {/* Botón de cerrar sesión */}
         <div className="p-4 border-t border-white/30">
           <button
-            onClick={handleLogout}
+            onClick={handleLogoutClick}
             className="w-full flex items-center justify-center space-x-2 p-2 bg-red-700 text-white rounded hover:bg-red-800 transition-colors duration-200 font-semibold"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -149,6 +160,18 @@ export default function Menu ({ items }) {
           </button>
         </div>
       </aside>
+
+      {/* Diálogo de confirmación de cierre de sesión */}
+      <ConfirmDialog
+        isOpen={showLogoutConfirm}
+        onClose={handleLogoutCancel}
+        onConfirm={handleLogoutConfirm}
+        title="¿Cerrar sesión?"
+        message="Estás a punto de cerrar tu sesión. ¿Deseas continuar?"
+        confirmText="Cerrar Sesión"
+        cancelText="Cancelar"
+        type="danger"
+      />
     </>
   )
 }

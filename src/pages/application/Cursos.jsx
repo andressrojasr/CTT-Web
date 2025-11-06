@@ -3,7 +3,7 @@ import { getCourses, getCoursesByCategory, searchCourses } from "../../api/cours
 import { enrollInCourse } from "../../api/inscripciones";
 import { EyeIcon } from "@heroicons/react/16/solid";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Table, EnrollmentModal } from "../../components/ui";
+import { Table, EnrollmentModal, ConfirmDialog } from "../../components/ui";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
@@ -31,10 +31,12 @@ export default function Cursos() {
   const [coursesLoaded, setCoursesLoaded] = useState(false);
   const [enrollmentError, setEnrollmentError] = useState(null);
   const [isInitialMount, setIsInitialMount] = useState(true);
+  const [showEnrollConfirm, setShowEnrollConfirm] = useState(false);
+  const [pendingEnrollment, setPendingEnrollment] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleEnroll = useCallback(async (courseId, courseName) => {
+  const handleEnrollClick = (courseId, courseName) => {
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
 
@@ -49,9 +51,18 @@ export default function Cursos() {
       return;
     }
 
+    // Guardar datos y mostrar confirmación
+    setPendingEnrollment({ courseId, courseName });
+    setShowEnrollConfirm(true);
+  };
+
+  const handleEnroll = useCallback(async (courseId, courseName) => {
+    setShowEnrollConfirm(false);
+
     try {
       setEnrolling(true);
       setEnrollmentError(null);
+      const user = localStorage.getItem('user');
       const userData = JSON.parse(user);
       const response = await enrollInCourse(userData.id, parseInt(courseId));
       setEnrollmentData(response);
@@ -69,8 +80,9 @@ export default function Cursos() {
       }
     } finally {
       setEnrolling(false);
+      setPendingEnrollment(null);
     }
-  }, [navigate, location.pathname]);
+  }, [navigate]);
 
   const loadCourses = async (
     category = "Todos",
@@ -116,7 +128,7 @@ export default function Cursos() {
               <EyeIcon className="h-5 w-5 inline-block" />
             </button>
             <button
-              onClick={() => handleEnroll(course.id, course.title)}
+              onClick={() => handleEnrollClick(course.id, course.title)}
               disabled={enrolling}
               className="bg-[#6C1313] hover:bg-[#5a0f0f] text-white px-3 py-1 rounded text-sm disabled:opacity-50"
             >
@@ -150,13 +162,14 @@ export default function Cursos() {
   useEffect(() => {
     const checkPendingEnrollment = async () => {
       if (coursesLoaded && location.state?.enrollCourseId) {
-        const pendingEnrollment = localStorage.getItem('pendingEnrollment');
-        if (pendingEnrollment) {
-          const { courseId, courseName } = JSON.parse(pendingEnrollment);
+        const pendingEnrollmentData = localStorage.getItem('pendingEnrollment');
+        if (pendingEnrollmentData) {
+          const { courseId, courseName } = JSON.parse(pendingEnrollmentData);
           localStorage.removeItem('pendingEnrollment');
-          console.log('Ejecutando inscripción automática:', courseId, courseName);
-          // Ejecutar la inscripción automáticamente
-          await handleEnroll(courseId, courseName);
+          console.log('Mostrando confirmación de inscripción:', courseId, courseName);
+          // Mostrar diálogo de confirmación en lugar de inscribir automáticamente
+          setPendingEnrollment({ courseId, courseName });
+          setShowEnrollConfirm(true);
         }
         // Limpiar el estado
         window.history.replaceState({}, document.title);
@@ -164,7 +177,7 @@ export default function Cursos() {
     };
     
     checkPendingEnrollment();
-  }, [coursesLoaded, location.state, handleEnroll]);
+  }, [coursesLoaded, location.state]);
 
   // Efecto para manejar la búsqueda con debounce
   useEffect(() => {
@@ -243,6 +256,21 @@ export default function Cursos() {
         enrollmentData={enrollmentData}
         courseName={selectedCourseName}
         error={enrollmentError}
+      />
+
+      <ConfirmDialog
+        isOpen={showEnrollConfirm}
+        onClose={() => {
+          setShowEnrollConfirm(false);
+          setPendingEnrollment(null);
+        }}
+        onConfirm={() => pendingEnrollment && handleEnroll(pendingEnrollment.courseId, pendingEnrollment.courseName)}
+        title="¿Confirmar inscripción?"
+        message={`¿Estás seguro de que deseas inscribirte en el curso "${pendingEnrollment?.courseName}"?`}
+        confirmText="Inscribirme"
+        cancelText="Cancelar"
+        type="info"
+        loading={enrolling}
       />
     </div>
   );

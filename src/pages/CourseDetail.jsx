@@ -4,7 +4,7 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { getCourseById } from "../api/courses";
 import { enrollInCourse } from "../api/inscripciones";
 import { CourseHeader, CourseContent, CourseRequirements, CourseSidebar, CourseDates, CourseObjetives, CourseMaterials } from "../components/courses";
-import { EnrollmentModal } from "../components/ui";
+import { EnrollmentModal, ConfirmDialog } from "../components/ui";
 
 export default function CourseDetail() {
     const { id } = useParams();
@@ -18,8 +18,9 @@ export default function CourseDetail() {
     const [enrollmentData, setEnrollmentData] = useState(null);
     const [shouldAutoEnroll, setShouldAutoEnroll] = useState(false);
     const [enrollmentError, setEnrollmentError] = useState(null);
+    const [showEnrollConfirm, setShowEnrollConfirm] = useState(false);
 
-    const handleEnroll = useCallback(async () => {
+    const handleEnrollClick = () => {
         const token = localStorage.getItem('token');
         const user = localStorage.getItem('user');
 
@@ -36,6 +37,15 @@ export default function CourseDetail() {
             navigate('/login', { state: { from: location } });
             return;
         }
+
+        // Mostrar diálogo de confirmación
+        setShowEnrollConfirm(true);
+    };
+
+    const handleEnroll = useCallback(async () => {
+        setShowEnrollConfirm(false);
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
 
         try {
             setEnrolling(true);
@@ -57,7 +67,7 @@ export default function CourseDetail() {
         } finally {
             setEnrolling(false);
         }
-    }, [id, course?.title, location, navigate]);
+    }, [id, navigate]);
 
     useEffect(() => {
         const loadCourse = async () => {
@@ -68,8 +78,8 @@ export default function CourseDetail() {
                 
                 // Verificar si hay una inscripción pendiente después de login
                 if (location.state?.enrollCourseId && location.state.enrollCourseId === parseInt(id)) {
-                    const pendingEnrollment = localStorage.getItem('pendingEnrollment');
-                    if (pendingEnrollment) {
+                    const pendingEnrollmentData = localStorage.getItem('pendingEnrollment');
+                    if (pendingEnrollmentData) {
                         localStorage.removeItem('pendingEnrollment');
                         setShouldAutoEnroll(true);
                     }
@@ -88,13 +98,14 @@ export default function CourseDetail() {
         }
     }, [id, location.state]);
 
-    // Efecto separado para ejecutar la inscripción automática cuando el curso esté cargado
+    // Efecto separado para mostrar confirmación cuando el curso esté cargado
     useEffect(() => {
         if (shouldAutoEnroll && course && !loading && !enrolling) {
             setShouldAutoEnroll(false);
-            handleEnroll();
+            // Mostrar diálogo de confirmación en lugar de inscribir automáticamente
+            setShowEnrollConfirm(true);
         }
-    }, [shouldAutoEnroll, course, loading, enrolling, handleEnroll]);
+    }, [shouldAutoEnroll, course, loading, enrolling]);
 
     const handleGoBack = () => {
         // Determinar de dónde vino el usuario
@@ -171,7 +182,7 @@ export default function CourseDetail() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content */}
                     <div className="lg:col-span-2">
-                        <CourseHeader course={course} onEnroll={handleEnroll} enrolling={enrolling} />
+                        <CourseHeader course={course} onEnroll={handleEnrollClick} enrolling={enrolling} />
                         <CourseDates course={course} />
                         <CourseObjetives course={course} />
                         <CourseContent course={course} />
@@ -181,7 +192,7 @@ export default function CourseDetail() {
 
                     {/* Sidebar */}
                     <div className="lg:col-span-1">
-                        <CourseSidebar course={course} onEnroll={handleEnroll} enrolling={enrolling} />
+                        <CourseSidebar course={course} onEnroll={handleEnrollClick} enrolling={enrolling} />
                     </div>
                 </div>
             </div>
@@ -195,6 +206,18 @@ export default function CourseDetail() {
                 enrollmentData={enrollmentData}
                 courseName={course?.title}
                 error={enrollmentError}
+            />
+
+            <ConfirmDialog
+                isOpen={showEnrollConfirm}
+                onClose={() => setShowEnrollConfirm(false)}
+                onConfirm={handleEnroll}
+                title="¿Confirmar inscripción?"
+                message={`¿Estás seguro de que deseas inscribirte en el curso "${course?.title}"?`}
+                confirmText="Inscribirme"
+                cancelText="Cancelar"
+                type="info"
+                loading={enrolling}
             />
         </div>
     );

@@ -4,6 +4,7 @@ import { Dialog, DialogPanel } from '@headlessui/react'
 import { useState, useEffect, useRef } from "react"
 import { mainNavigation, itemsHeader } from '../../constants/navigation'
 import { isAuthenticated, getUser, clearAuthData } from '../../utils/auth'
+import { ConfirmDialog } from '../ui'
 import logoCTT from '../../assets/logoCTT.webp'
 import logoUTAPequeno from '../../assets/LogoUTAPequeño.png'
 
@@ -11,6 +12,7 @@ export default function Nav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [user, setUser] = useState(null)
   const [showUserMenu, setShowUserMenu] = useState(false)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const navigate = useNavigate()
   const menuRef = useRef(null)
 
@@ -54,12 +56,25 @@ export default function Nav() {
     }
   }, [showUserMenu])
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
+    // Cerrar el menú móvil antes de mostrar el diálogo
+    setMobileMenuOpen(false)
+    setShowUserMenu(false)
+    // Pequeño delay para que el menú se cierre antes de mostrar el diálogo
+    setTimeout(() => {
+      setShowLogoutConfirm(true)
+    }, 100)
+  }
+
+  const handleLogoutConfirm = () => {
     clearAuthData()
     setUser(null)
-    setShowUserMenu(false)
-    setMobileMenuOpen(false)
+    setShowLogoutConfirm(false)
     navigate('/')
+  }
+
+  const handleLogoutCancel = () => {
+    setShowLogoutConfirm(false)
   }
 
   return (
@@ -115,7 +130,7 @@ export default function Nav() {
                       Ir a la plataforma
                     </Link>
                     <button
-                      onClick={handleLogout}
+                      onClick={handleLogoutClick}
                       className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors mt-1"
                     >
                       <ArrowRightOnRectangleIcon className="size-5" />
@@ -234,7 +249,7 @@ export default function Nav() {
                     Ir a la plataforma
                   </Link>
                   <button
-                    onClick={handleLogout}
+                    onClick={handleLogoutClick}
                     className="block w-full px-4 py-3 text-center font-semibold text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
                   >
                     Cerrar Sesión
@@ -255,6 +270,17 @@ export default function Nav() {
         </DialogPanel>
       </Dialog>
 
+      {/* Diálogo de confirmación de cierre de sesión */}
+      <ConfirmDialog
+        isOpen={showLogoutConfirm}
+        onClose={handleLogoutCancel}
+        onConfirm={handleLogoutConfirm}
+        title="¿Cerrar sesión?"
+        message="Estás a punto de cerrar tu sesión. ¿Deseas continuar?"
+        confirmText="Cerrar Sesión"
+        cancelText="Cancelar"
+        type="danger"
+      />
     </>
   )
 }
