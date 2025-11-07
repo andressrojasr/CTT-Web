@@ -10,6 +10,7 @@ import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import Dashboard from './pages/application/Dashboard'
 import Cursos from './pages/application/Cursos'
+import CursosInscritos from './pages/application/CursosInscritos'
 
 function App() {
   const location = useLocation()
@@ -47,6 +48,7 @@ function App() {
           >
             <Route index element={<Navigate to="cursos/disponibles" replace />} />  
             <Route path="cursos/disponibles" element={<Cursos />} />
+            <Route path="cursos/inscrito" element={<CursosInscritos />} />
             <Route path="curso/:id" element={<CourseDetail />} />
             {/* Otras rutas privadas pueden ir aquí */}
           </Route>

@@ -79,7 +79,7 @@ export default function Nav() {
 
   return (
     <>
-      <nav aria-label="Global" className="sticky top-0 shadow-lg  z-50 w-full flex items-center justify-between p-6 lg:px-8 bg-[#FFFFFF] md:bg-[#6C1313] lg:bg-[#6C1313]">
+      <nav aria-label="Global" className="sticky h-[60px] top-0 shadow-lg  z-50 w-full flex items-center justify-between p-6 lg:px-8 bg-[#FFFFFF] md:bg-[#6C1313] lg:bg-[#6C1313]">
         <div className="lg:flex md:flex hidden lg:gap-x-12 md:gap-x-12 gap-4 lg:pl-30 md:pl-20">
           {mainNavigation.map((item) => (
             <NavLink
