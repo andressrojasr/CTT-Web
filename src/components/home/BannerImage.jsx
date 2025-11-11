@@ -1,5 +1,6 @@
 import AOS from "aos";
 import 'aos/dist/aos.css'
+import { Link } from "react-router-dom";
 
 import { useState, useEffect } from "react";
 
@@ -41,11 +42,15 @@ export default function BannerImage({buttons, slides}) {
                 <p className="mt-4 text-lg">{slide.text}</p>
               </div>
 
-              <div>
-                <button key={slide.id} data-aos="fade-left">
-                  {slide.buttonText}
-                </button>
-              </div>
+              {slide.buttonText && slide.buttonLink && (
+                <div>
+                  <Link to={slide.buttonLink} key={slide.id} data-aos="fade-left">
+                    <button>
+                      {slide.buttonText}
+                    </button>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>

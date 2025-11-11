@@ -1,5 +1,6 @@
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { Link } from "react-router-dom";
 
 import { useState, useEffect, use } from "react";
 
@@ -43,10 +44,12 @@ export default function Carrusel({slides, height= "500px", buttons, marginTop, c
                   {slide.subtitle}
                 </h2>
               )}
-              { slide.buttonText && (
-                <button className="mt-6" key={slide.id} data-aos="fade-right" data-aos-delay="400">
-                  {slide.buttonText}
-                </button>
+              { slide.buttonText && slide.buttonLink && (
+                <Link to={slide.buttonLink} key={slide.id} data-aos="fade-right" data-aos-delay="400">
+                  <button className="mt-6">
+                    {slide.buttonText}
+                  </button>
+                </Link>
               )}
             </div>
           </div>
