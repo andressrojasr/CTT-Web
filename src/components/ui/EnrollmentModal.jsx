@@ -1,6 +1,9 @@
 import { XMarkIcon, CheckCircleIcon, ExclamationCircleIcon, UserCircleIcon, CalendarIcon, ClockIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
+import { useNavigate } from 'react-router-dom';
 
 export default function EnrollmentModal({ isOpen, onClose, enrollmentData, courseName, error }) {
+  const navigate = useNavigate();
+  
   if (!isOpen) return null;
 
   const formatDate = (dateString) => {
@@ -117,15 +120,18 @@ export default function EnrollmentModal({ isOpen, onClose, enrollmentData, cours
 
               {/* Action Button */}
               <button
-                onClick={onClose}
+                onClick={() => {
+                  onClose();
+                  navigate('/dashboard/cursos/inscrito');
+                }}
                 className="w-full bg-[#6C1313] hover:bg-[#5a0f0f] text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
               >
-                Continuar
+                Generar orden de pago
               </button>
 
               {/* Footer Note */}
               <p className="text-xs text-center text-gray-500 mt-4">
-                Recibirás más información sobre el curso próximamente
+                Para continuar con el proceso genera la orden de pago. Recibirás más información sobre el curso próximamente
               </p>
             </>
           )}

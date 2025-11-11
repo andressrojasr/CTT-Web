@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getUserEnrollments } from "../../api/inscripciones";
-import { EyeIcon } from "@heroicons/react/16/solid";
+import { EyeIcon, DocumentTextIcon } from "@heroicons/react/16/solid";
 import { useNavigate } from "react-router-dom";
 import { Table } from "../../components/ui";
 import AOS from "aos";
@@ -21,6 +21,13 @@ export default function CursosInscritos() {
   const [pageSize, setPageSize] = useState(7);
   const [statusFilter, setStatusFilter] = useState(null);
   const navigate = useNavigate();
+
+  const handleGeneratePaymentOrder = (enrollmentId, courseName) => {
+    // Aquí puedes implementar la lógica para generar la orden de pago
+    console.log('Generar orden de pago para inscripción:', enrollmentId, courseName);
+    // TODO: Implementar lógica de generación de orden de pago
+    alert(`Generar orden de pago para: ${courseName}`);
+  };
 
   const loadEnrollments = async (enrollmentStatus = null) => {
     try {
@@ -65,6 +72,14 @@ export default function CursosInscritos() {
                 title="Ver detalles del curso"
               >
                 <EyeIcon className="h-5 w-5 inline-block" />
+              </button>
+              <button
+                onClick={() => handleGeneratePaymentOrder(enrollment.id, enrollment.course_title)}
+                className="bg-[#6C1313] hover:bg-[#5a0f0f] text-white px-3 py-1 rounded text-sm flex items-center gap-1"
+                title="Generar orden de pago"
+              >
+                <DocumentTextIcon className="h-4 w-4" />
+                <span>Generar Orden</span>
               </button>
             </div>
           ),

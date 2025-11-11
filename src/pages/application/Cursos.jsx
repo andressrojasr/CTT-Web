@@ -68,6 +68,8 @@ export default function Cursos() {
       setEnrollmentData(response);
       setSelectedCourseName(courseName);
       setShowEnrollmentModal(true);
+      // Recargar la tabla de cursos después de inscripción exitosa
+      await loadCourses(categorySelected || "Todos", page, pageSize, searchQuery);
     } catch (err) {
       if (err.message === 'UNAUTHORIZED') {
         localStorage.removeItem('token');
@@ -82,7 +84,7 @@ export default function Cursos() {
       setEnrolling(false);
       setPendingEnrollment(null);
     }
-  }, [navigate]);
+  }, [navigate, categorySelected, page, pageSize, searchQuery]);
 
   const loadCourses = async (
     category = "Todos",

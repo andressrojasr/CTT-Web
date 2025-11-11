@@ -11,15 +11,19 @@ import Register from './pages/auth/Register'
 import Dashboard from './pages/application/Dashboard'
 import Cursos from './pages/application/Cursos'
 import CursosInscritos from './pages/application/CursosInscritos'
+import { useSessionExpiration } from './hooks/useSessionExpiration'
+import { isAuthenticated } from './utils/auth'
 
 function App() {
   const location = useLocation()
   const isLogin = location.pathname === '/login' || location.pathname === '/register' || location.pathname.startsWith('/dashboard')
 
-  // Componente para proteger rutas (solo entra si hay token)
+  // Activar el control de expiración de sesión
+  useSessionExpiration();
+
+  // Componente para proteger rutas (solo entra si hay token válido)
   const PrivateRoute = ({ children }) => {
-    const token = localStorage.getItem('token');
-    return token ? children : <Navigate to="/login" replace />;
+    return isAuthenticated() ? children : <Navigate to="/login" replace />;
   };
 
   return (

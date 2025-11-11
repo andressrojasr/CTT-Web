@@ -133,7 +133,7 @@ export default function Menu ({ items }) {
           <div className="p-4 border-t border-white/30">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#6C1313] font-bold text-xl">
-                {user.nombre?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || 'U'}
+                {user.nombre?.charAt(0).toUpperCase() || user.first_name?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold truncate">
